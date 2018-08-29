@@ -87,3 +87,35 @@ dari service:
 ```php
 $valid = $this->form->validate($form_name, $preset_object);
 ```
+
+## Method
+
+Di bawah ini adalah daftar method-method yang dimiliki oleh form:
+
+### field(string $name, $options=null): string
+
+Menggenerasi html input berdasarkan konfigurasi field pada form rules.
+
+### getError(string $field): ?object
+
+Mengambil informasi error field, jika ada.
+
+### getErrors(): array
+
+Mengambil semua error yang terjadi pada form.
+
+### getResult(): ?object
+
+Mengambil hasil akhir validasi form.
+
+### hasError(): ?bool
+
+Mengecek jika ada error pada form.
+
+### setObject(object $object): void
+
+Menset default form object.
+
+### validate(object $object=null): ?object
+
+Memvalidasi object dan mengembalikan data sesuai dengan method `getResult()`.
