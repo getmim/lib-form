@@ -35,6 +35,22 @@ class Form
         $this->rules = $forms->$name;
     }
 
+    public function addError(string $field, string $code, string $text=null): void{
+        if(!$text){
+            $locale = \Mim::$app->config->libValidator->errors->$code ?? '';
+            if($locale)
+                $text = lang($locale);
+        }
+
+        $error = (object)[
+            'field' => $field,
+            'code'  => $code,
+            'text'  => $text
+        ];
+
+        $this->errors[$field] = $error;
+    }
+
     public function field(string $name, $options=null): string{
         if(!isset($this->rules->$name))
             trigger_error('Field `' . $name . '` under form `' . $this->form . '` is not exists');

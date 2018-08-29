@@ -92,6 +92,14 @@ $valid = $this->form->validate($form_name, $preset_object);
 
 Di bawah ini adalah daftar method-method yang dimiliki oleh form:
 
+### addError(string $field, string $code, string $text=null): void
+
+Menambahkan manual error pada form. Jika nilai parameter text tidak
+didefinisikan, maka properti `text` dari error object diambil dari
+translasi berdasarkan error code. Sebagai catatan bahwa menambahkan
+error melalui metode ini tidak akan mengirimkan informasi rule pada
+translasi.
+
 ### field(string $name, $options=null): string
 
 Menggenerasi html input berdasarkan konfigurasi field pada form rules.
