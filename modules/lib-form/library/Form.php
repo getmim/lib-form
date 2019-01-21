@@ -51,15 +51,40 @@ class Form
         $this->errors[$field] = $error;
     }
 
+    public function csrfField(string $name='CSRFToken'): string{
+        $token = sha1(base64_encode(random_bytes(25)));
+
+        $cname = 'csrf-' . $token;
+
+        \Mim::$app->cache->add($cname, ':)', ( 60 * 60 * 2 ));
+
+        return '<input type="hidden" value="' . $token . '" name="' . $name . '">';
+    }
+
+    public function csrfTest(string $name='CSRFToken'): bool{
+        $token = \Mim::$app->req->get($name);
+        if(!$token)
+            return false;
+
+        $cname = 'csrf-' . $token;
+
+        $cache = \Mim::$app->cache->get($cname);
+        if(!$cache)
+            return false;
+        \Mim::$app->cache->remove($cname);
+        return true;
+    }
+
     public function field(string $name, $options=null): string{
         if(!isset($this->rules->$name))
             trigger_error('Field `' . $name . '` under form `' . $this->form . '` is not exists');
 
         $field_params = $this->rules->$name;
+        $field_params->name = $name;
         $params = [
-            'field' => $field_params,
+            'field'   => $field_params,
             'options' => $options,
-            'value' => $this->result->$name ?? $this->object->$name ?? null
+            'value'   => $this->result->$name ?? $this->object->$name ?? null
         ];
 
         $view = 'form/field/' . $field_params->type;

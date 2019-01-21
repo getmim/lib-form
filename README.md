@@ -100,6 +100,14 @@ translasi berdasarkan error code. Sebagai catatan bahwa menambahkan
 error melalui metode ini tidak akan mengirimkan informasi rule pada
 translasi.
 
+### csrfField(string $name='CSRFToken'): string
+
+Menggenerasi html input hidden untuk token csrf prevention.
+
+### csrfTest(string $name='CSRFToken'): bool
+
+Menguji nilai csrf yang dikirimkan oleh form dari browser.
+
 ### field(string $name, $options=null): string
 
 Menggenerasi html input berdasarkan konfigurasi field pada form rules.
