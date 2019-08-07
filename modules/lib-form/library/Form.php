@@ -84,7 +84,8 @@ class Form
         $params = [
             'field'   => $field_params,
             'options' => $options,
-            'value'   => $this->result->$name ?? $this->object->$name ?? null
+            'value'   => $this->result->$name ?? $this->object->$name ?? null,
+            'form'    => $this
         ];
 
         $view = 'form/field/' . $field_params->type;
@@ -97,6 +98,10 @@ class Form
 
     public function getErrors(): array{
         return $this->errors;
+    }
+
+    public function getName(): string{
+        return $this->form;
     }
 
     public function getResult(): ?object{

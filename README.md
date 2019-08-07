@@ -110,7 +110,9 @@ Menguji nilai csrf yang dikirimkan oleh form dari browser.
 
 ### field(string $name, $options=null): string
 
-Menggenerasi html input berdasarkan konfigurasi field pada form rules.
+Menggenerasi html input berdasarkan konfigurasi field pada form rules. Fungsi ini akan
+menggenerasi theme file di `./theme/[GATE]/form/field/[type].phtml` dengan tembusan
+parameter `field`, `options`, `value`, dan `form`.
 
 ### getError(string $field): ?object
 
@@ -119,6 +121,10 @@ Mengambil informasi error field, jika ada.
 ### getErrors(): array
 
 Mengambil semua error yang terjadi pada form.
+
+### getName(): string
+
+Mengambil nama form.
 
 ### getResult(): ?object
 
