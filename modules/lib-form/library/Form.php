@@ -32,7 +32,7 @@ class Form
         $forms = \Mim::$app->config->libForm->forms;
         if(!isset($forms->$name))
             trigger_error('Form named `' . $name . '` not found');
-        $this->rules = $forms->$name;
+        $this->rules = (object)$forms->$name;
     }
 
     public function addError(string $field, string $code, string $text=null): void{
