@@ -119,6 +119,8 @@ class Form
     public function validate(object $object=null): ?object {
         if($object)
             $this->setObject($object);
+        if(\Mim::$app->req->method === 'GET')
+            return null;
         $to_validate = (object)\Mim::$app->req->get();
         list($result, $error) = Validator::validate($this->rules, $to_validate);
 
