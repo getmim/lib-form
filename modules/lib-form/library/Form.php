@@ -79,12 +79,16 @@ class Form
         if(!isset($this->rules->$name))
             trigger_error('Field `' . $name . '` under form `' . $this->form . '` is not exists');
 
+        $value = $this->result->$name ?? null;
+        if(\Mim::$app->req->method === 'GET')
+            $value = $this->object->$name ?? null;
+
         $field_params = $this->rules->$name;
         $field_params->name = $name;
         $params = [
             'field'   => $field_params,
             'options' => $options,
-            'value'   => $this->result->$name ?? $this->object->$name ?? null,
+            'value'   => $value,
             'form'    => $this
         ];
 
