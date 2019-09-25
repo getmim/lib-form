@@ -86,10 +86,14 @@ class Form
         $field_params = $this->rules->$name;
         $field_params->name = $name;
         $params = [
-            'field'   => $field_params,
-            'options' => $options,
-            'value'   => $value,
-            'form'    => $this
+            'id'         => $this->getName() . '-fld-' . $name,
+            'field'      => $field_params,
+            'options'    => $options,
+            'value'      => $value,
+            'form'       => $this,
+            'error'      => $this->getError($name),
+            'show_label' => !isset($field_params->nolabel) || !$field_params->nolabel,
+            'rules'      => (object)$field_params->rules
         ];
 
         $view = 'form/field/' . $field_params->type;
