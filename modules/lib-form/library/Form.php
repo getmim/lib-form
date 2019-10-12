@@ -23,6 +23,8 @@ class Form
 
     private $rules;
 
+    private $csrf;
+
     public function __construct(string $name){
         $this->object = (object)[];
         $this->result = (object)[];
@@ -32,7 +34,21 @@ class Form
         $forms = \Mim::$app->config->libForm->forms;
         if(!isset($forms->$name))
             trigger_error('Form named `' . $name . '` not found');
-        $this->rules = (object)$forms->$name;
+
+        $this->rules = (object)[];
+        $rules = (array)$forms->$name;
+        foreach($rules as $name => $field){
+            $field->name = $name;
+            if(isset($field->modules)){
+                $field->modules = (array)$field->modules;
+                foreach($field->modules as $mod){
+                    if(!module_exists($mod))
+                        continue 2;
+                }
+            }
+
+            $this->rules->$name = $field;
+        }
     }
 
     public function addError(string $field, string $code, string $text=null): void{
@@ -52,12 +68,7 @@ class Form
     }
 
     public function csrfField(string $name='CSRFToken'): string{
-        $token = sha1(base64_encode(random_bytes(25)));
-
-        $cname = 'csrf-' . $token;
-
-        \Mim::$app->cache->add($cname, ':)', ( 60 * 60 * 2 ));
-
+        $token = $this->csrfToken();
         return '<input type="hidden" value="' . $token . '" name="' . $name . '">';
     }
 
@@ -75,6 +86,18 @@ class Form
         return true;
     }
 
+    public function csrfToken(): string{
+        if($this->csrf)
+            return $this->csrf;
+
+        $this->csrf = sha1(base64_encode(random_bytes(25)));
+
+        $cname = 'csrf-' . $this->csrf;
+        \Mim::$app->cache->add($cname, ':)', ( 60 * 60 * 2 ));
+
+        return $this->csrf;
+    }
+
     public function field(string $name, $options=null): string{
         if(!isset($this->rules->$name))
             trigger_error('Field `' . $name . '` under form `' . $this->form . '` is not exists');
@@ -84,8 +107,7 @@ class Form
             $value = $this->object->$name ?? null;
 
         $field_params = $this->rules->$name;
-        $field_params->name = $name;
-
+        
         $field_id = $this->getName() . '-fld-' . $name;
         $field_id = preg_replace('![^a-zA-Z0-9-]!', '-', $field_id);
         $field_id = preg_replace('!-+!', '-', $field_id);
@@ -111,6 +133,10 @@ class Form
 
     public function getErrors(): array{
         return $this->errors;
+    }
+
+    public function getFields(): object{
+        return $this->rules;
     }
 
     public function getName(): string{

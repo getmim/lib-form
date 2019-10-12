@@ -25,6 +25,8 @@ return [
                 '/field-name/' => [
                     'label' => '/Field Label/',
                     'type'  => '/Field Type/',
+                    // use only if provided module installed
+                    'modules' => ['/module/'],
                     'rules' => [
                         // list of rules
                     ],
@@ -108,6 +110,10 @@ Menggenerasi html input hidden untuk token csrf prevention.
 
 Menguji nilai csrf yang dikirimkan oleh form dari browser.
 
+### csrfToken(): string
+
+Mengambil nilai token untuk csrf.
+
 ### field(string $name, $options=null): string
 
 Menggenerasi html input berdasarkan konfigurasi field pada form rules. Fungsi ini akan
@@ -121,6 +127,10 @@ Mengambil informasi error field, jika ada.
 ### getErrors(): array
 
 Mengambil semua error yang terjadi pada form.
+
+### getFields(): object
+
+Mengambil semua field yang akan di proses oleh module.
 
 ### getName(): string
 
