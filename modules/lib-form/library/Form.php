@@ -85,8 +85,13 @@ class Form
 
         $field_params = $this->rules->$name;
         $field_params->name = $name;
+
+        $field_id = $this->getName() . '-fld-' . $name;
+        $field_id = preg_replace('![^a-zA-Z0-9-]!', '-', $field_id);
+        $field_id = preg_replace('!-+!', '-', $field_id);
+
         $params = [
-            'id'         => $this->getName() . '-fld-' . $name,
+            'id'         => $field_id,
             'field'      => $field_params,
             'options'    => $options,
             'value'      => $value,
