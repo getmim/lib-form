@@ -2,7 +2,7 @@
 
 return [
     '__name' => 'lib-form',
-    '__version' => '0.2.0',
+    '__version' => '0.3.0',
     '__git' => 'git@github.com:getmim/lib-form.git',
     '__license' => 'MIT',
     '__author' => [
@@ -45,6 +45,14 @@ return [
     ],
 
     'libForm' => [
-        'forms' => []
+        'forms' => [
+            'std-empty' => [
+                'none' => [
+                    'label' => 'Unused',
+                    'type' => 'text',
+                    'rules' => []
+                ]
+            ]
+        ]
     ]
 ];

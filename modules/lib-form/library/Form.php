@@ -82,6 +82,15 @@ class Form
         $cache = \Mim::$app->cache->get($cname);
         if(!$cache)
             return false;
+
+        if($cache['form'] != $this->form)
+            return false;
+
+        if(module_exists('lib-user')){
+            if($cache['user'] && $cache['user'] != \Mim::$app->user->id)
+                return false;
+        }
+
         \Mim::$app->cache->remove($cname);
         return true;
     }
@@ -93,7 +102,17 @@ class Form
         $this->csrf = sha1(base64_encode(random_bytes(25)));
 
         $cname = 'csrf-' . $this->csrf;
-        \Mim::$app->cache->add($cname, ':)', ( 60 * 60 * 2 ));
+
+        $data = [
+            'form' => $this->form,
+            'user' => 0
+        ];
+        if(module_exists('lib-user')){
+            if(\Mim::$app->user->isLogin())
+                $data['user'] = \Mim::$app->user->id;
+        }
+
+        \Mim::$app->cache->add($cname, $data, ( 60 * 60 * 2 ));
 
         return $this->csrf;
     }
