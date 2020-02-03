@@ -2,7 +2,7 @@
 
 return [
     '__name' => 'lib-form',
-    '__version' => '0.3.0',
+    '__version' => '0.4.0',
     '__git' => 'git@github.com:getmim/lib-form.git',
     '__license' => 'MIT',
     '__author' => [
@@ -19,10 +19,10 @@ return [
                 'lib-validator' => NULL
             ],
             [
-                'lib-view' => null
+                'lib-view' => NULL
             ],
             [
-                'lib-cache' => null
+                'lib-cache' => NULL
             ]
         ],
         'optional' => []
@@ -43,7 +43,6 @@ return [
     'service' => [
         'form' => 'LibForm\\Service\\Form'
     ],
-
     'libForm' => [
         'forms' => [
             'std-empty' => [
@@ -52,6 +51,13 @@ return [
                     'type' => 'text',
                     'rules' => []
                 ]
+            ]
+        ]
+    ],
+    'callback' => [
+        'app' => [
+            'reconfig' => [
+                'LibForm\\Library\\Config::reconfig' => true
             ]
         ]
     ]
