@@ -104,43 +104,60 @@ class Combiner
                             if($this->id){
                                 $enums = $c_name::get([$c_field => $this->id]);
                                 if($enums)
-                                    $object->$field = $opt_value = array_column($enums, $c_ident);
+                                    $object->$field = array_column($enums, $c_ident);
                             }
-                        break;
+
+                            $opt_value = $object->$field = \Mim::$app->req->get($field, $object->$field);
+                            break;
+
+                        case 'object':
+                            if(!isset($object->$field))
+                                $object->$field = null;
+
+                            $object->$field = \Mim::$app->req->get($field, $object->$field);
+
+                            $model   = $format->model;
+                            $opt_model = $model->name;
+                            $opt_field = $model->field;
+
+                            $opt_value = $object->$field;
+
+                            break;
                     }
 
                     // get the options
-                    $fopts = [];
+                    if($opt_model){
+                        $fopts = [];
 
-                    if($f_fetch !== 'none'){
-                        $cond = [];
-                        if($f_fetch === 'active')
-                            $cond[$opt_field] = $opt_value;
-                        $enums = $opt_model::get($cond, 0, 1, [$f_label=>true]);
+                        if($f_fetch !== 'none'){
+                            $cond = [];
+                            if($f_fetch === 'active')
+                                $cond[$opt_field] = $opt_value;
+                            $enums = $opt_model::get($cond, 0, 1, [$f_label=>true]);
 
-                        if($enums){
-                            if(!$f_parent)
-                                $fopts = array_column($enums, $f_label, $opt_field);
-                            else{
-                                foreach($enums as $enum){
-                                    $fopts[] = [
-                                        'value'  => $enum->$opt->field,
-                                        'label'  => $enum->$f_label,
-                                        'parent' => $enum->$f_parent
-                                    ];
+                            if($enums){
+                                if(!$f_parent)
+                                    $fopts = array_column($enums, $f_label, $opt_field);
+                                else{
+                                    foreach($enums as $enum){
+                                        $fopts[] = [
+                                            'value'  => $enum->$opt->field,
+                                            'label'  => $enum->$f_label,
+                                            'parent' => $enum->$f_parent
+                                        ];
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    $this->field_options[$field] = $fopts;
+                        $this->field_options[$field] = $fopts;
+                    }
                     break;
 
                 case 'json':
                     if(!$value)
-                        $value = (object)[];
-                    else
-                        $object->$field = json_decode($value);
+                        $value = '[]';
+                    $object->$field = json_decode($value);
 
                     foreach($object->$field as $fld => $val)
                         $object->{$field . '-' . $fld} = $val;
