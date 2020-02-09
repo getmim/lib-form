@@ -57,7 +57,7 @@ return [
     'callback' => [
         'app' => [
             'reconfig' => [
-                'LibForm\\Library\\Config::reconfig' => true
+                'LibForm\\Library\\Config::reconfig' => TRUE
             ]
         ]
     ]

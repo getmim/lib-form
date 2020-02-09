@@ -13,6 +13,8 @@ use LibView\Library\View;
 class Form
 {
 
+    private $csrf;
+
     private $errors = [];
 
     private $form;
@@ -23,7 +25,6 @@ class Form
 
     private $rules;
 
-    private $csrf;
 
     public function __construct(string $name){
         $this->object = (object)[];
@@ -66,7 +67,7 @@ class Form
 
         $this->errors[$field] = $error;
     }
-
+    
     public function csrfField(string $name='CSRFToken'): string{
         $token = $this->csrfToken();
         return '<input type="hidden" value="' . $token . '" name="' . $name . '">';
