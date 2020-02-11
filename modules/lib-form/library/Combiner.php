@@ -140,8 +140,8 @@ class Combiner
                                     $fopts = array_column($enums, $f_label, $opt_field);
                                 else{
                                     foreach($enums as $enum){
-                                        $fopts[] = [
-                                            'value'  => $enum->$opt->field,
+                                        $fopts[] = (object)[
+                                            'value'  => $enum->$opt_field,
                                             'label'  => $enum->$f_label,
                                             'parent' => $enum->$f_parent
                                         ];
