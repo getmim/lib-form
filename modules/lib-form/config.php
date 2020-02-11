@@ -2,7 +2,7 @@
 
 return [
     '__name' => 'lib-form',
-    '__version' => '0.5.0',
+    '__version' => '0.5.1',
     '__git' => 'git@github.com:getmim/lib-form.git',
     '__license' => 'MIT',
     '__author' => [

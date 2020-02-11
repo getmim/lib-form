@@ -17,6 +17,7 @@ class Combiner
     private $new_object;
     private $old_object;
     private $new_chain_values = [];
+    private $old_chain_values = [];
 
     private $ex_modules = [];
     private $ex_perms = [];
@@ -103,8 +104,10 @@ class Combiner
 
                             if($this->id){
                                 $enums = $c_name::get([$c_field => $this->id]);
-                                if($enums)
+                                if($enums){
                                     $object->$field = array_column($enums, $c_ident);
+                                    $this->old_chain_values[$field] = $object->$field;
+                                }
                             }
 
                             $opt_value = $object->$field = \Mim::$app->req->get($field, $object->$field);
@@ -254,7 +257,7 @@ class Combiner
             $t_name  = $opt_model = $target->name;
             $t_field = $opt_field = $target->field;
 
-            $old_val = $this->old_object->$field ?? [];
+            $old_val = $this->old_chain_values[$field] ?? [];
             $new_val = $this->new_object->$field ?? [];
 
             $add_val = array_values(array_diff($new_val, $old_val));
