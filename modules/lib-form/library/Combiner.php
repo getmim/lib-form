@@ -174,6 +174,7 @@ class Combiner
 
     public function finalize(object $object): object{
         $this->new_object = clone $object;
+        $mod_object = clone $object;
 
         foreach($this->options as $field => $opts){
             $f_module = $opts[0];
@@ -189,13 +190,13 @@ class Combiner
             if(!$this->checkPerms($f_perms))
                 continue;
 
-            if(!isset($object->$field))
-                $object->$field = NULL;
+            if(!isset($mod_object->$field))
+                $mod_object->$field = NULL;
 
             switch($f_type){
                 case 'array':
-                    if($object->$field)
-                        $object->$field = json_encode($object->$field);
+                    if($mod_object->$field)
+                        $mod_object->$field = json_encode($mod_object->$field);
                     break;
 
                 case 'format':
@@ -209,32 +210,32 @@ class Combiner
 
                     switch($format->type){
                         case 'chain':
-                            $this->new_chain_values[$field] = $object->$field ?? [];
-                            unset($object->$field);
+                            $this->new_chain_values[$field] = $mod_object->$field ?? [];
+                            unset($mod_object->$field);
                         break;
                     }
 
                     break;
 
                 case 'json':
-                    $object->$field = (object)[];
+                    $mod_object->$field = (object)[];
                     $fld_len = strlen($field);
                     $fld_pan = $fld_len + 1;
-                    foreach($object as $fld => $val){
+                    foreach($mod_object as $fld => $val){
                         if(substr($fld, 0, $fld_len) !== $field)
                             continue;
                         $prop_name = substr($fld, $fld_pan);
                         if(!$prop_name)
                             continue;
-                        $object->$field->$prop_name = $val;
-                        unset($object->$fld);
+                        $mod_object->$field->$prop_name = $val;
+                        unset($mod_object->$fld);
                     }
-                    $object->$field = json_encode($object->$field);
+                    $mod_object->$field = json_encode($mod_object->$field);
                     break;
             }
         }
 
-        return $object;
+        return $mod_object;
     }
 
     public function save(int $id, int $user): void{
