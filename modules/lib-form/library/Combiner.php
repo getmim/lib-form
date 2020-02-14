@@ -119,7 +119,7 @@ class Combiner
 
                             $object->$field = \Mim::$app->req->get($field, $object->$field);
 
-                            $model   = $format->model;
+                            $model     = $format->model;
                             $opt_model = $model->name;
                             $opt_field = $model->field;
 
@@ -154,6 +154,52 @@ class Combiner
                         }
 
                         $this->field_options[$field] = $fopts;
+                    }
+                    break;
+
+                case 'format-json':
+                    $format = $this->format->$field ?? NULL;
+                    if(!$format)
+                        trigger_error('Format for field `' . $field . '` not found');
+
+                    switch($format->type){
+                        case 'chain':
+                            $chain   = $format->chain;
+                            $c_model = $chain->model;
+                            $c_name  = $c_model->name;
+                            $c_field = $c_model->field;
+                            $c_ident = $chain->identity;
+
+                            $target  = $format->model;
+                            $t_name  = $opt_model = $target->name;
+                            $t_field = $opt_field = $target->field;
+
+                            $object->$field = '[]';
+
+                            if($this->id){
+                                $enums = $c_name::get([$c_field => $this->id]);
+                                if($enums){
+                                    $this->old_chain_values[$field] = array_column($enums, $c_ident);
+                                    $ori_object = $t_name::get([$t_field=>$this->old_chain_values[$field]]);
+                                    if($ori_object){
+                                        $json_value = [];
+                                        foreach($ori_object as $enum){
+                                            $tobject = [];
+                                            foreach($f_parent as $tfld => $tval){
+                                                $tfval = $tval;
+                                                if(substr($tval,0,1) === '.')
+                                                    $tfval = $enum->{substr($tval,1)};
+                                                $tobject[$tfld] = $tfval;
+                                            }
+                                            $json_value[] = $tobject;
+                                        }
+                                        $object->$field = json_encode($json_value);
+                                    }
+                                }
+                            }
+
+                            $opt_value = $object->$field = \Mim::$app->req->get($field, $object->$field);
+                            break;
                     }
                     break;
 
@@ -204,17 +250,29 @@ class Combiner
                     if(!$format)
                         trigger_error('Format for field `' . $field . '` not found');
 
-                    $opt_model = null;
-                    $opt_field = null;
-                    $opt_value = null;
-
                     switch($format->type){
                         case 'chain':
                             $this->new_chain_values[$field] = $mod_object->$field ?? [];
                             unset($mod_object->$field);
                         break;
                     }
+                    break;
 
+                case 'format-json':
+                    $format = $this->format->$field ?? NULL;
+                    if(!$format)
+                        trigger_error('Format for field `' . $field . '` not found');
+
+                    if(!$mod_object->$field )
+                        $mod_object->$field  = '[]';
+                    $result = json_decode(($mod_object->$field ?? '[]'));
+
+                    switch($format->type){
+                        case 'chain':
+                            $this->new_chain_values[$field] = array_column($result, $f_label);
+                            unset($mod_object->$field);
+                        break;
+                    }
                     break;
 
                 case 'json':
@@ -259,7 +317,7 @@ class Combiner
             $t_field = $opt_field = $target->field;
 
             $old_val = $this->old_chain_values[$field] ?? [];
-            $new_val = $this->new_object->$field ?? [];
+            $new_val = $value ?? [];
 
             $add_val = array_values(array_diff($new_val, $old_val));
             $rem_val = array_values(array_diff($old_val, $new_val));
