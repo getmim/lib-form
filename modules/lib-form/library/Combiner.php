@@ -71,7 +71,7 @@ class Combiner
             $value = $object->$field ?? NULL;
 
             switch($f_type){
-                
+
                 case 'array':
                     if(!$value)
                         $object->$field = [];
@@ -136,6 +136,8 @@ class Combiner
                             $cond = [];
                             if($f_fetch === 'active')
                                 $cond[$opt_field] = $opt_value;
+                            elseif(is_array($f_fetch))
+                                $cond = $f_fetch;
                             $enums = $opt_model::get($cond, 0, 1, [$f_label=>true]);
 
                             if($enums){
@@ -319,12 +321,12 @@ class Combiner
             $old_val = $this->old_chain_values[$field] ?? [];
             $new_val = $value ?? [];
 
-            $add_val = array_values(array_diff($new_val, $old_val));
-            $rem_val = array_values(array_diff($old_val, $new_val));
+            $add_val = array_values(array_diff((array)$new_val, (array)$old_val));
+            $rem_val = array_values(array_diff((array)$old_val, (array)$new_val));
 
             if($rem_val)
                 $c_name::remove([$c_ident=>$rem_val, $c_field=>$id]);
-            
+
             if($add_val){
                 $add_qry = [];
                 foreach($add_val as $val){
