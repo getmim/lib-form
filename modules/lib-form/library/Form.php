@@ -147,6 +147,13 @@ class Form
         return View::render($view, $params);
     }
 
+    public function fieldExists(string $name): bool
+    {
+        $fields = $this->getFields();
+
+        return property_exists($fields, $name);
+    }
+
     public function getError(string $field): ?object{
         return $this->errors[$field] ?? null;
     }
